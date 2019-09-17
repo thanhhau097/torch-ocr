@@ -54,8 +54,7 @@ def collate_wrapper(batch):
     channels = images[0].shape[2]
     images = process_batch_images(images, height=height, max_width=max_width, channels=channels)
     images = images.transpose((0, 3, 1, 2))
-    print(images.shape)
-    images = torch.from_numpy(images)
+    images = torch.from_numpy(images).float()
 
     # LABELS
     pad_list = zero_padding(labels)

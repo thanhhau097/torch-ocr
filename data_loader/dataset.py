@@ -25,7 +25,7 @@ class OCRDataset(Dataset):
         img_path = self.get_data_path(self.image_paths[idx])
         image = self.read_image(img_path)
         label = self.labels[idx]
-        label = self.voc.get_indices_from_label(label)  # TODO: label must be numbers
+        label = self.voc.get_indices_from_label(label)
         sample = {"image": image, "label": label}
         return sample
 
@@ -57,6 +57,8 @@ class OCRDataset(Dataset):
 
         return voc
 
+    def get_vocab(self):
+        return self.voc
 
 if __name__ == '__main__':
     dataset = OCRDataset('../data', 'train.json')
