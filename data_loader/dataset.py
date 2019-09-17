@@ -4,6 +4,8 @@ import json
 import cv2
 from torch.utils.data import Dataset
 
+from data_loader.vocab import Vocab
+
 
 class OCRDataset(Dataset):
     """Read dataset for OCR"""
@@ -14,6 +16,7 @@ class OCRDataset(Dataset):
         self.channels = channels
 
         self.image_paths, self.labels = self.__get_image_paths_and_labels(self.get_data_path(json_path))
+        self.voc = self.build_vocab(self.labels)
 
     def __len__(self):
         return len(self.image_paths)
@@ -21,8 +24,8 @@ class OCRDataset(Dataset):
     def __getitem__(self, idx):
         img_path = self.get_data_path(self.image_paths[idx])
         image = self.read_image(img_path)
-
         label = self.labels[idx]
+        label = self.voc.get_indices_from_label(label)  # TODO: label must be numbers
         sample = {"image": image, "label": label}
         return sample
 
@@ -46,3 +49,18 @@ class OCRDataset(Dataset):
         image_paths = list(data.keys())
         labels = list(data.values())
         return image_paths, labels
+
+    def build_vocab(self, labels):
+        voc = Vocab()
+        for label in labels:
+            voc.add_label(label)
+
+        return voc
+
+
+if __name__ == '__main__':
+    dataset = OCRDataset('../data', 'train.json')
+    for i, item in enumerate(dataset):
+        print(item['label'])
+        if i == 10:
+            break
