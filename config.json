@@ -27,7 +27,7 @@
     },
     "loss": "nll_mask_loss",
     "metrics": [
-        "accuracy_by_char"
+        "accuracy"
     ],
     "lr_scheduler": {
         "type": "StepLR",

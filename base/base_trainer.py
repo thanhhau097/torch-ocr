@@ -121,7 +121,7 @@ class BaseTrainer:
                                 "on this machine.".format(n_gpu_use, n_gpu))
             n_gpu_use = n_gpu
         CUDA = torch.cuda.is_available()
-        device = torch.device('cuda:0' if CUDA else 'cpu')  # TODO: check cuda
+        device = torch.device('cuda:0' if CUDA else 'cpu')
         list_ids = list(range(n_gpu_use))
         return device, list_ids
 

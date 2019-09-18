@@ -24,6 +24,7 @@ class Trainer(BaseTrainer):
             # iteration-based training
             self.data_loader = inf_loop(data_loader)
             self.len_epoch = len_epoch
+        self.voc = self.data_loader.get_vocab()
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
@@ -32,7 +33,7 @@ class Trainer(BaseTrainer):
     def _eval_metrics(self, output, target):
         acc_metrics = np.zeros(len(self.metrics))
         for i, metric in enumerate(self.metrics):
-            acc_metrics[i] += metric(output, target)
+            acc_metrics[i] += metric(output, target, self.voc)
             self.writer.add_scalar('{}'.format(metric.__name__), acc_metrics[i])
         return acc_metrics
 
@@ -77,7 +78,7 @@ class Trainer(BaseTrainer):
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
                     epoch,
                     self._progress(batch_idx),
-                    print_loss  # loss.item()  # TODO
+                    print_loss  # loss.item()
                 ))
                 self.writer.add_image('input', make_grid(images.cpu(), nrow=8, normalize=True))
 
@@ -88,6 +89,8 @@ class Trainer(BaseTrainer):
             'loss': total_loss / self.len_epoch,
             'metrics': (total_metrics / self.len_epoch).tolist()
         }
+
+        print(log)
 
         if self.do_validation:
             val_log = self._valid_epoch(epoch)
@@ -107,7 +110,7 @@ class Trainer(BaseTrainer):
         Note:
             The validation metrics in log must have the key 'val_metrics'.
         """
-        # TODO: when evaluating, we dont use teacher forcing
+        # when evaluating, we don't use teacher forcing
         self.model.eval()
         total_val_loss = 0
         total_val_metrics = np.zeros(len(self.metrics))
@@ -128,10 +131,13 @@ class Trainer(BaseTrainer):
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')
 
-        return {
+        return_value = {
             'val_loss': total_val_loss / len(self.valid_data_loader),
             'val_metrics': (total_val_metrics / len(self.valid_data_loader)).tolist()
         }
+        print(return_value)
+
+        return return_value
 
     def _progress(self, batch_idx):
         base = '[{}/{} ({:.0f}%)]'

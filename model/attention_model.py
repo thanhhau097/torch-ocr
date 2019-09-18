@@ -43,7 +43,6 @@ class OCRModel(BaseModel):
         teacher_forcing_ratio = 0.5
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
-        # TODO: we need to calculate closs in trainer.py file
         outputs = torch.zeros((max_label_length, batch_size, self.num_chars), device=device)
 
         # print("Get device", decoder_input.get_device(), decoder_hidden.get_device(), encoder_outputs.get_device())
@@ -81,6 +80,7 @@ if __name__ == '__main__':
     item = next(iter(dataloader))
     print('Input size:', item[0].size())
 
+    device = torch.device("cpu")
     model = OCRModel(num_chars=65)
-    x = model(item[0], item[1], item[3])
+    x = model(item[0], item[1], item[3], device)
     print("After Decoder", x.size())

@@ -17,6 +17,7 @@ class OCRDataset(Dataset):
 
         self.image_paths, self.labels = self.__get_image_paths_and_labels(self.get_data_path(json_path))
         self.voc = self.build_vocab(self.labels)
+        self.voc.save_vocab_dict()
 
     def __len__(self):
         return len(self.image_paths)
