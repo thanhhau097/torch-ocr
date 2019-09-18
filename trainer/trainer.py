@@ -56,26 +56,30 @@ class Trainer(BaseTrainer):
 
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
-        for batch_idx, (data, target) in enumerate(self.data_loader):
-            data, target = data.to(self.device), target.to(self.device)
+        for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.data_loader):
+            images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
+            # print("After change device:", images.get_device(), labels.get_device(), mask.get_device())
 
             self.optimizer.zero_grad()
-            output = self.model(data)
-            loss = self.loss(output, target)
+            output = self.model(images, labels, max_label_length, self.device)
+            # nll mask loss
+            loss, print_loss = self.loss(output, labels, mask)
+            # print("LOSS tensor", loss)
             loss.backward()
             self.optimizer.step()
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
-            self.writer.add_scalar('loss', loss.item())
-            total_loss += loss.item()
-            total_metrics += self._eval_metrics(output, target)
+            self.writer.add_scalar('loss', print_loss)
+            total_loss += print_loss  # loss.item()
+            total_metrics += self._eval_metrics(output, labels)
 
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
                     epoch,
                     self._progress(batch_idx),
-                    loss.item()))
-                self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+                    print_loss  # loss.item()  # TODO
+                ))
+                self.writer.add_image('input', make_grid(images.cpu(), nrow=8, normalize=True))
 
             if batch_idx == self.len_epoch:
                 break
@@ -103,21 +107,22 @@ class Trainer(BaseTrainer):
         Note:
             The validation metrics in log must have the key 'val_metrics'.
         """
+        # TODO: when evaluating, we dont use teacher forcing
         self.model.eval()
         total_val_loss = 0
         total_val_metrics = np.zeros(len(self.metrics))
         with torch.no_grad():
-            for batch_idx, (data, target) in enumerate(self.valid_data_loader):
-                data, target = data.to(self.device), target.to(self.device)
+            for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.valid_data_loader):
+                images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
 
-                output = self.model(data)
-                loss = self.loss(output, target)
+                output = self.model(images, labels, max_label_length, self.device, training=False)
+                _, print_loss = self.loss(output, labels, mask)
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
-                self.writer.add_scalar('loss', loss.item())
-                total_val_loss += loss.item()
-                total_val_metrics += self._eval_metrics(output, target)
-                self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+                self.writer.add_scalar('loss', print_loss)
+                total_val_loss += print_loss
+                total_val_metrics += self._eval_metrics(output, labels)
+                self.writer.add_image('input', make_grid(images, nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():

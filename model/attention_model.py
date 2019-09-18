@@ -4,8 +4,8 @@ import torch.nn.functional as F
 import random
 
 from base import BaseModel
-from .visual_encoders.cnn_encoder import CNNEncoder  # TODO: bug?
-from .rnn_encoders.rnn_encoder import BidirectionalGRU
+from model.visual_encoders.cnn_encoder import CNNEncoder
+from model.rnn_encoders.rnn_encoder import BidirectionalGRU
 from model.decoders.attention_decoder import LuongAttnDecoderRNN
 from data_loader.vocab import SOS_token
 
@@ -15,13 +15,14 @@ class OCRModel(BaseModel):
         super().__init__()
         self.encoder = CNNEncoder(3, 256)
         self.rnn_encoder = BidirectionalGRU(2048, 256, 256)
+        self.num_chars = num_chars
         embedding = nn.Embedding(num_chars, 256)
         self.decoder = LuongAttnDecoderRNN('general', embedding, 256, num_chars)
 
-    def forward(self, x, labels, max_label_length):
+    def forward(self, x, labels, max_label_length, device, training=True):
         # ---------------- CNN ENCODER --------------
         x = self.encoder(x)
-        print('After CNN:', x.size())
+        # print('After CNN:', x.size())
 
         # ---------------- CNN TO RNN ----------------
         x = x.permute(3, 0, 2, 1)  # from B x C x H x W -> W x B x H x C
@@ -30,11 +31,12 @@ class OCRModel(BaseModel):
 
         # ----------------- RNN ENCODER ---------------
         encoder_outputs, last_hidden = self.rnn_encoder(x)
-        print('After RNN', x.size())
+        # print('After RNN', x.size())
 
         # --------------- ATTENTION DECODER -------------------
         batch_size = encoder_outputs.size()[1]
         decoder_input = torch.LongTensor([[SOS_token for _ in range(batch_size)]])
+        decoder_input = decoder_input.to(device)
         decoder_hidden = last_hidden[:self.decoder.n_layers]
 
         # Forward batch of sequences through decoder one time step at a time
@@ -42,39 +44,43 @@ class OCRModel(BaseModel):
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         # TODO: we need to calculate closs in trainer.py file
-        if use_teacher_forcing:
+        outputs = torch.zeros((max_label_length, batch_size, self.num_chars), device=device)
+
+        # print("Get device", decoder_input.get_device(), decoder_hidden.get_device(), encoder_outputs.get_device())
+
+        if use_teacher_forcing and training:
             for t in range(max_label_length):
+                # print('timestep:', t)
                 decoder_output, decoder_hidden = self.decoder(
                     decoder_input, decoder_hidden, encoder_outputs
                 )
                 # Teacher forcing: next input is current target
                 decoder_input = labels[t].view(1, -1)
+                outputs[t] = decoder_output
+                # print(decoder_input.get_device())
         else:
             for t in range(max_label_length):
+                # print('timestep:', t)
                 decoder_output, decoder_hidden = self.decoder(
                     decoder_input, decoder_hidden, encoder_outputs
                 )
                 # No teacher forcing: next input is decoder's own current output
                 _, topi = decoder_output.topk(1)
                 decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]])
-                # print("Decoder Output:", decoder_output.size())
-                # print("Decoder Input:", decoder_input)
+                decoder_input = decoder_input.to(device)
+                outputs[t] = decoder_output
 
-            # print("After Decoder", decoder_output.size())
-            return F.log_softmax(x, dim=1)
+        return outputs
 
 
 if __name__ == '__main__':
     from data_loader.data_loaders import OCRDataLoader
     from data_loader.collate import collate_wrapper
-    from model.visual_encoders.cnn_encoder import CNNEncoder
-    from model.rnn_encoders.rnn_encoder import BidirectionalGRU
-    from data_loader.vocab import SOS_token
 
-    dataloader = OCRDataLoader('../../data', 'train.json', 4, collate_fn=collate_wrapper)
+    dataloader = OCRDataLoader('../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))
     print('Input size:', item[0].size())
 
     model = OCRModel(num_chars=65)
     x = model(item[0], item[1], item[3])
-    print(x.size())
+    print("After Decoder", x.size())
