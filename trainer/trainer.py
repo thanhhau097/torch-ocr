@@ -31,10 +31,12 @@ class Trainer(BaseTrainer):
         self.log_step = int(np.sqrt(data_loader.batch_size))
 
     def _eval_metrics(self, output, target):
-        acc_metrics = np.zeros(len(self.metrics))
-        for i, metric in enumerate(self.metrics):
-            acc_metrics[i] += metric(output, target, self.voc)
-            self.writer.add_scalar('{}'.format(metric.__name__), acc_metrics[i])
+        # acc_metrics = np.zeros(len(self.metrics))
+        acc_metrics = np.zeros(2)
+        acc_metrics += self.metrics[0](output, target, self.voc)
+        # for i, metric in enumerate(self.metrics):
+        #     acc_metrics[i] += metric(output, target, self.voc)
+        #     self.writer.add_scalar('{}'.format(metric.__name__), acc_metrics[i])
         return acc_metrics
 
     def _train_epoch(self, epoch):
@@ -56,18 +58,31 @@ class Trainer(BaseTrainer):
         self.model.train()
 
         total_loss = 0
-        total_metrics = np.zeros(len(self.metrics))
+        # total_metrics = np.zeros(len(self.metrics))
+        total_metrics = np.zeros(2)
+
         for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.data_loader):
             images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
             # print("After change device:", images.get_device(), labels.get_device(), mask.get_device())
 
             self.optimizer.zero_grad()
             output = self.model(images, labels, max_label_length, self.device)
+            # TODO: check ctc or attention
             # nll mask loss
-            loss, print_loss = self.loss(output, labels, mask)
+            # ------ ATTENTION ----------
+            # loss, print_loss = self.loss(output, labels, mask)
             # print("LOSS tensor", loss)
+            # ---------- CTC --------------
+            lengths = torch.sum(mask, dim=0).to(self.device)
+
+            torch.backends.cudnn.enabled = False
+            loss = self.loss(output, labels, lengths)
+            torch.backends.cudnn.enabled = True
+            print_loss = loss.item()
+
             loss.backward()
             self.optimizer.step()
+
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.writer.add_scalar('loss', print_loss)
@@ -113,13 +128,18 @@ class Trainer(BaseTrainer):
         # when evaluating, we don't use teacher forcing
         self.model.eval()
         total_val_loss = 0
-        total_val_metrics = np.zeros(len(self.metrics))
+        # total_val_metrics = np.zeros(len(self.metrics))
+        total_val_metrics = np.zeros(2)
         with torch.no_grad():
             for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.valid_data_loader):
                 images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
 
                 output = self.model(images, labels, max_label_length, self.device, training=False)
-                _, print_loss = self.loss(output, labels, mask)
+                # loss, print_losses = self.loss(output, labels, mask)  # Attention:
+                lengths = torch.sum(mask, dim=0).to(self.device)
+                loss = self.loss(output, labels, lengths)
+
+                print_loss = loss.item()
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar('loss', print_loss)

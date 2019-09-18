@@ -1,6 +1,7 @@
 import torch
 import difflib
 import numpy as np
+import itertools
 
 
 from data_loader.vocab import Vocab
@@ -25,6 +26,7 @@ def my_metric2(output, target, k=3):
 
 
 # TODO: combine accuracy by char and by field into one
+# TODO: decode for ctc
 def accuracy(outputs, targets, voc: Vocab):
     outputs = _get_target_from_output(outputs)
     outputs = outputs.transpose(1, 0)
@@ -43,6 +45,30 @@ def accuracy(outputs, targets, voc: Vocab):
             total_acc_by_field += 1
         # print("Predict:", pred_text)
         # print("Target:", target_text)
+
+    return np.array([total_acc_by_char / targets.size()[0], total_acc_by_field / targets.size()[0]])
+
+
+def accuracy_ctc(outputs, targets, voc: Vocab):
+    outputs = outputs.permute(1, 0, 2)
+    targets = targets.transpose(1, 0)
+
+    total_acc_by_char = 0
+    total_acc_by_field = 0
+
+    for output, target in zip(outputs, targets):
+        out_best = list(torch.argmax(output, -1))  # [2:]
+        out_best = [k for k, g in itertools.groupby(out_best)]
+        pred_text = voc.get_label_from_indices(out_best)  # todo: need to stop when meet EOS
+        target_text = voc.get_label_from_indices(target)
+
+        # print('predict:', pred_text, 'target:', target_text)
+
+        acc_by_char = calculate_ac(pred_text, target_text)
+        total_acc_by_char += acc_by_char
+
+        if pred_text == target_text:
+            total_acc_by_field += 1
 
     return np.array([total_acc_by_char / targets.size()[0], total_acc_by_field / targets.size()[0]])
 
@@ -78,7 +104,7 @@ def _get_target_from_output(output):
 if __name__ == '__main__':
     from data_loader.data_loaders import OCRDataLoader
     from data_loader.collate import collate_wrapper
-    from model.attention_model import OCRModel
+    from model.attention_model import AttentionModel
 
     dataloader = OCRDataLoader('../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))
@@ -86,7 +112,7 @@ if __name__ == '__main__':
     print('Input size:', item[0].size())
 
     device = torch.device("cpu")
-    model = OCRModel(num_chars=65)
+    model = AttentionModel(num_chars=65)
     x = model(item[0], item[1], item[3], device)
     print("After Decoder", x.size())
 

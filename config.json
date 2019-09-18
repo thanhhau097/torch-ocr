@@ -3,7 +3,7 @@
     "n_gpu": 1,
 
     "arch": {
-        "type": "OCRModel",
+        "type": "CTCModel",
         "args": {}
     },
     "data_loader": {
@@ -11,7 +11,7 @@
         "args":{
             "data_dir": "data/",
             "json_path": "train.json",
-            "batch_size": 4,
+            "batch_size": 8,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
@@ -25,9 +25,9 @@
             "amsgrad": true
         }
     },
-    "loss": "nll_mask_loss",
+    "loss": "ctc_loss",
     "metrics": [
-        "accuracy"
+        "accuracy_ctc"
     ],
     "lr_scheduler": {
         "type": "StepLR",

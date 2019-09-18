@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import random
 
 from base import BaseModel
@@ -10,11 +9,12 @@ from model.decoders.attention_decoder import LuongAttnDecoderRNN
 from data_loader.vocab import SOS_token
 
 
-class OCRModel(BaseModel):
+class AttentionModel(BaseModel):
     def __init__(self, num_chars=65):
         super().__init__()
         self.encoder = CNNEncoder(3, 256)
-        self.rnn_encoder = BidirectionalGRU(2048, 256, 256)
+        # in_dimension = height / self.encoder.downsample_factor * 256
+        self.rnn_encoder = BidirectionalGRU(2048, 256, 256)  # change here
         self.num_chars = num_chars
         embedding = nn.Embedding(num_chars, 256)
         self.decoder = LuongAttnDecoderRNN('general', embedding, 256, num_chars)
@@ -81,6 +81,6 @@ if __name__ == '__main__':
     print('Input size:', item[0].size())
 
     device = torch.device("cpu")
-    model = OCRModel(num_chars=65)
+    model = AttentionModel(num_chars=65)
     x = model(item[0], item[1], item[3], device)
     print("After Decoder", x.size())

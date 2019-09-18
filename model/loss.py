@@ -1,5 +1,7 @@
 import torch.nn.functional as F
 import torch
+from torch.nn import CTCLoss
+from data_loader.vocab import PAD_token, EOS_token
 
 
 def nll_loss(output, target):
@@ -34,3 +36,16 @@ def sub_nll_mask_loss(output, target, mask, device):
     loss = crossEntropy.masked_select(mask).mean()
     loss = loss.to(device)
     return loss, nTotal.item()
+
+
+def ctc_loss(outputs, targets, target_lengths):
+    # We need to change targets, PAD_token = 0 = blank
+    # EOS token -> PAD_token
+    targets[targets == EOS_token] = PAD_token
+    outputs = outputs.log_softmax(2)
+    input_lengths = outputs.size()[0] * torch.ones(outputs.size()[1], dtype=torch.int)
+    loss = CTCLoss(blank=PAD_token, zero_infinity=True)
+    targets = targets.transpose(1, 0)
+    # print(input_lengths, target_lengths)
+    # TODO: bug when target_length > input_length, we can increase size or use zero infinity
+    return loss(outputs, targets, input_lengths, target_lengths)

@@ -13,7 +13,7 @@ class OCRDataLoader(BaseDataLoader):
                  collate_fn=collate_wrapper,
                  shuffle=True,
                  validation_split=0.0, num_workers=1):
-        self.height = 64
+        # self.height = 32
         trsfm = transforms.Compose([
             # ToTensor(),
             # Rescale(self.height),
