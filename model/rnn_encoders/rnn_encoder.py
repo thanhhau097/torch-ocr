@@ -26,15 +26,15 @@ class BidirectionalGRU(nn.Module):
         self.rnn = nn.GRU(input_size, hidden_size, bidirectional=True)
         self.embedding = nn.Linear(hidden_size * 2, output_size)
 
-    def forward(self, input):
-        recurrent, _ = self.rnn(input)
+    def forward(self, x):
+        recurrent, hidden = self.rnn(x)
         T, b, h = recurrent.size()
         t_rec = recurrent.view(T * b, h)
 
         output = self.embedding(t_rec)  # [T * b, nOut]
         output = output.view(T, b, -1)
 
-        return output
+        return output, hidden
 
 
 class BidirectionalGRU_2(nn.Module):
@@ -58,14 +58,14 @@ if __name__ == '__main__':
 
     dataloader = OCRDataLoader('../../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))
-    print(item[0].size())
+    print('Input size:', item[0].size())
 
     encoder = CNNEncoder(3, 256)
     x = encoder(item[0])
     x = x.permute(3, 0, 2, 1)  # from B x C x H x W -> W x B x H x C
     size = x.size()
     x = x.reshape(size[0], size[1], size[2] * size[3])
-    print(x.size())
+    print('After CNN:', x.size())
     rnn_encoder = BidirectionalGRU(2048, 256, 256)
-    x = rnn_encoder(x)
-    print(x.size())
+    x, hidden = rnn_encoder(x)
+    print('After RNN:', x.size(), 'hidden:', hidden.size())

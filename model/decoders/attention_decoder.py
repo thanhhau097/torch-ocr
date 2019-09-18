@@ -53,6 +53,7 @@ if __name__ == '__main__':
     from data_loader.collate import collate_wrapper
     from model.visual_encoders.cnn_encoder import CNNEncoder
     from model.rnn_encoders.rnn_encoder import BidirectionalGRU
+    from data_loader.vocab import SOS_token
 
     dataloader = OCRDataLoader('../../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))
@@ -64,12 +65,31 @@ if __name__ == '__main__':
     x = x.permute(3, 0, 2, 1)  # from B x C x H x W -> W x B x H x C
     size = x.size()
     x = x.reshape(size[0], size[1], size[2] * size[3])
+
+    # ----------------- RNN ENCODER ---------------
     rnn_encoder = BidirectionalGRU(2048, 256, 256)
-    x = rnn_encoder(x)
+    encoder_outputs, last_hidden = rnn_encoder(x)
     print('After RNN', x.size())
-    # TODO: using for loop when decoding
-    # voc = dataloader.get_vocab()
-    # embedding = nn.Embedding(voc.num_words, 256)
-    # decoder = LuongAttnDecoderRNN('general', embedding, 256, 256)
-    # x = decoder(x)
-    # print("After Decoder")
+
+    # --------------- ATTENTION DECODER -------------------
+    voc = dataloader.get_vocab()
+    print('Num chars:', voc.num_chars)
+    embedding = nn.Embedding(voc.num_chars, 256)
+    decoder = LuongAttnDecoderRNN('general', embedding, 256, voc.num_chars)
+
+    batch_size = encoder_outputs.size()[1]
+    decoder_input = torch.LongTensor([[SOS_token for _ in range(batch_size)]])
+    decoder_hidden = last_hidden[:decoder.n_layers]
+
+    max_label_length = item[3]
+    for t in range(max_label_length):
+        decoder_output, decoder_hidden = decoder(
+            decoder_input, decoder_hidden, encoder_outputs
+        )
+        # No teacher forcing: next input is decoder's own current output
+        _, topi = decoder_output.topk(1)
+        decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]])
+        print("Decoder Output:", decoder_output.size())
+        print("Decoder Input:", decoder_input)
+
+    # print("After Decoder", decoder_output.size())
