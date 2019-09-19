@@ -46,6 +46,8 @@ def ctc_loss(outputs, targets, target_lengths):
     input_lengths = outputs.size()[0] * torch.ones(outputs.size()[1], dtype=torch.int)
     loss = CTCLoss(blank=PAD_token, zero_infinity=True)
     targets = targets.transpose(1, 0)
+    # target_lengths have EOS token, we need minus one
+    target_lengths = target_lengths - 1
     # print(input_lengths, target_lengths)
     # TODO: bug when target_length > input_length, we can increase size or use zero infinity
     return loss(outputs, targets, input_lengths, target_lengths)

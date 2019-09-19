@@ -42,28 +42,33 @@ def main(config):
     model.eval()
 
     total_loss = 0.0
-    total_metrics = torch.zeros(len(metric_fns))
+    total_metrics = torch.zeros(2)
+    # total_metrics = torch.zeros(len(metric_fns))
 
     with torch.no_grad():
-        for i, (data, target) in enumerate(tqdm(data_loader)):
-            data, target = data.to(device), target.to(device)
-            output = model(data)
+        for i, (images, labels, mask, max_label_length) in enumerate(tqdm(data_loader)):
+            images, labels, mask = images.to(device), labels.to(device), mask.to(device)
 
-            #
-            # save sample images, or do something with output here
-            #
+            output = model(images, labels, max_label_length, device, training=False)
+            # loss, print_losses = self.loss(output, labels, mask)  # Attention:
+            lengths = torch.sum(mask, dim=0).to(device)
+            loss = loss_fn(output, labels, lengths)
+            print_loss = loss.item()
 
-            # computing loss, metrics on test set
-            loss = loss_fn(output, target)
-            batch_size = data.shape[0]
-            total_loss += loss.item() * batch_size
-            for i, metric in enumerate(metric_fns):
-                total_metrics[i] += metric(output, target) * batch_size
+            # batch_size = data.shape[0]
+            total_loss += print_loss # loss.item() * batch_size
+            # for i, metric in enumerate(metric_fns):
+            #     total_metrics[i] += metric(output, target) * batch_size
+            total_metrics += metric_fns[0](output, labels)
 
-    n_samples = len(data_loader.sampler)
-    log = {'loss': total_loss / n_samples}
+    # n_samples = len(data_loader.sampler)
+    n_batches = len(data_loader)
+    log = {'loss': total_loss / n_batches}
+    # log.update({
+    #     met.__name__: total_metrics[i].item() / n_samples for i, met in enumerate(metric_fns)
+    # })
     log.update({
-        met.__name__: total_metrics[i].item() / n_samples for i, met in enumerate(metric_fns)
+        metric_fns[0].__name__: total_metrics / n_batches
     })
     logger.info(log)
 

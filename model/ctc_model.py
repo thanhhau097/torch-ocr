@@ -13,7 +13,7 @@ class CTCModel(BaseModel):
     def __init__(self, num_chars=65):
         super().__init__()
         self.encoder = CNNEncoder(3, 256)
-        # in_dimension = height / self.encoder.downsample_factor * 256
+        # in_dimension = height / self.encoder.downsample_factor * 256  # TODO: pass height
         self.rnn_encoder = BidirectionalGRU(2048, 256, 256)
         self.num_chars = num_chars
         self.decoder = nn.Linear(256, self.num_chars)

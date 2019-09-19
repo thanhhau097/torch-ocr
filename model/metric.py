@@ -25,7 +25,6 @@ def my_metric2(output, target, k=3):
     return correct / len(target)
 
 
-# TODO: combine accuracy by char and by field into one
 # TODO: decode for ctc
 def accuracy(outputs, targets, voc: Vocab):
     outputs = _get_target_from_output(outputs)
@@ -59,7 +58,7 @@ def accuracy_ctc(outputs, targets, voc: Vocab):
     for output, target in zip(outputs, targets):
         out_best = list(torch.argmax(output, -1))  # [2:]
         out_best = [k for k, g in itertools.groupby(out_best)]
-        pred_text = voc.get_label_from_indices(out_best)  # todo: need to stop when meet EOS
+        pred_text = voc.get_label_from_indices(out_best)
         target_text = voc.get_label_from_indices(target)
 
         # print('predict:', pred_text, 'target:', target_text)
