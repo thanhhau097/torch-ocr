@@ -4,15 +4,15 @@ import torch.nn as nn
 from base import BaseModel
 from model.visual_encoders.cnn_encoder import CNNEncoder
 from model.rnn_encoders.rnn_encoder import BidirectionalGRU
+from model.visual_encoders.sample_encoder import VGG_FeatureExtractor
 
 
 class CTCModel(BaseModel):
     def __init__(self, num_chars=65):
         super().__init__()
-        self.encoder = CNNEncoder(3, 256)
+        self.encoder = CNNEncoder(3, 512)
         self.AdaptiveAvgPool = nn.AdaptiveAvgPool2d((None, 1))
-        # in_dimension = height / self.encoder.downsample_factor * 256  # TODO: pass height
-        self.rnn_encoder = BidirectionalGRU(256, 256, 256)
+        self.rnn_encoder = BidirectionalGRU(512, 256, 256)
         self.num_chars = num_chars
         self.decoder = nn.Linear(256, self.num_chars)
 

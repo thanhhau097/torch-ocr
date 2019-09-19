@@ -11,7 +11,7 @@ from trainer import Trainer
 
 def main(config):
     logger = config.get_logger('train')
-    type = config['type']
+    model_type = config['type']
 
     # setup data_loader instances
     data_loader = config.initialize('data_loader', module_data)
@@ -26,8 +26,8 @@ def main(config):
     logger.info(model)
 
     # get function handles of loss and metrics
-    loss = getattr(module_loss, config['loss'][type])
-    metrics = [getattr(module_metric, met) for met in config['metrics'][type]]
+    loss = getattr(module_loss, config['loss'][model_type])
+    metrics = [getattr(module_metric, met) for met in config['metrics'][model_type]]
 
     # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
