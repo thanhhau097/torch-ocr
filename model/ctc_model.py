@@ -21,7 +21,7 @@ class CTCModel(BaseModel):
         # print('After CNN:', x.size())
 
         # ---------------- CNN TO RNN ----------------
-        x = x.permute(3, 0, 2, 1)  # from B x C x H x W -> W x B x H x C
+        x = x.permute(3, 0, 1, 2)  # from B x C x H x W -> W x B x H x C
         size = x.size()
         x = x.reshape(size[0], size[1], size[2] * size[3])
 
