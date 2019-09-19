@@ -7,7 +7,6 @@ import itertools
 from data_loader.vocab import Vocab
 
 
-# TODO: decode for ctc
 def accuracy_attention(outputs, targets, voc: Vocab):
     outputs = _get_target_from_output(outputs)
     outputs = outputs.transpose(1, 0)

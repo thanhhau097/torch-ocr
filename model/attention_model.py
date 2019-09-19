@@ -10,10 +10,11 @@ from data_loader.vocab import SOS_token
 
 
 class AttentionModel(BaseModel):
-    def __init__(self, num_chars=65):
+    def __init__(self, num_chars):
         super().__init__()
         self.encoder = CNNEncoder(3, 256)
         # in_dimension = height / self.encoder.downsample_factor * 256
+        # TODO: calculate in_dimension here
         self.rnn_encoder = BidirectionalGRU(2048, 256, 256)  # change here
         self.num_chars = num_chars
         embedding = nn.Embedding(num_chars, 256)
@@ -40,7 +41,7 @@ class AttentionModel(BaseModel):
         decoder_hidden = last_hidden[:self.decoder.n_layers]
 
         # Forward batch of sequences through decoder one time step at a time
-        teacher_forcing_ratio = 0.5
+        teacher_forcing_ratio = 0.5  # TODO: change to dynamic teacher forcing
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         outputs = torch.zeros((max_label_length, batch_size, self.num_chars), device=device)

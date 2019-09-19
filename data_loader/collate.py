@@ -2,7 +2,6 @@ import itertools
 import cv2
 import numpy as np
 import torch
-from torchvision.transforms import ToTensor
 
 from data_loader.vocab import PAD_token
 
@@ -31,6 +30,7 @@ def collate_wrapper(batch):
     """
     images = []
     labels = []
+    # TODO: can change height in config
     height = 64
     max_width = 0
     max_label_length = 0
@@ -79,6 +79,15 @@ def process_image(image, height=64, channels=3):
 
 
 def process_batch_images(images, height, max_width, channels=3):
+    """
+    Convert a list of images to a tensor (with padding)
+
+    :param images: list of numpy array images
+    :param height: desired height
+    :param max_width: max width of all images
+    :param channels: number of image channels
+    :return: a tensor representing images
+    """
     output = np.ones([len(images), height, max_width, channels])
     for i, image in enumerate(images):
         final_img = image
@@ -89,6 +98,12 @@ def process_batch_images(images, height, max_width, channels=3):
 
 
 def zero_padding(l, fillvalue=PAD_token):
+    """
+    Pad value PAD token to l
+    :param l: list of sequences need padding
+    :param fillvalue: padded value
+    :return:
+    """
     return list(itertools.zip_longest(*l, fillvalue=fillvalue))
 
 

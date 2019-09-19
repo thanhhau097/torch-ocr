@@ -4,7 +4,7 @@ from tqdm import tqdm
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
-import model.attention_model as module_arch
+import model.ocr_model as module_arch
 from parse_config import ConfigParser
 
 
@@ -21,8 +21,12 @@ def main(config):
         num_workers=2
     )
 
+    # get vocab -> pass num chars to model
+    voc = data_loader.get_vocab()
+    kwarg = {"num_chars": voc.num_chars}
+
     # build model architecture
-    model = config.initialize('arch', module_arch)
+    model = config.initialize('arch', module_arch, **kwarg)
     logger.info(model)
 
     # get function handles of loss and metrics
@@ -52,8 +56,7 @@ def main(config):
             output = model(images, labels, max_label_length, device, training=False)
             # loss, print_losses = self.loss(output, labels, mask)  # Attention:
             lengths = torch.sum(mask, dim=0).to(device)
-            loss = loss_fn(output, labels, lengths)
-            print_loss = loss.item()
+            loss, print_loss = loss_fn(output, labels, lengths)
 
             # batch_size = data.shape[0]
             total_loss += print_loss # loss.item() * batch_size

@@ -17,9 +17,12 @@ def main(config):
     data_loader = config.initialize('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
 
+    # get vocab -> pass num chars to model
+    voc = data_loader.get_vocab()
+    kwarg = {"num_chars": voc.num_chars}
+
     # build model architecture, then print to console
-    # TODO: 2 types of model (CTC or attention)
-    model = config.initialize('arch', module_arch)
+    model = config.initialize('arch', module_arch, **kwarg)
     logger.info(model)
 
     # get function handles of loss and metrics

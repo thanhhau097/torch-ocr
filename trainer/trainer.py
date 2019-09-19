@@ -67,17 +67,8 @@ class Trainer(BaseTrainer):
 
             self.optimizer.zero_grad()
             output = self.model(images, labels, max_label_length, self.device)
-            # TODO: check ctc or attention
-            # nll mask loss
-            # ------ ATTENTION ----------
-            loss, print_loss = self.loss(output, labels, mask)
-            # print("LOSS tensor", loss)
-            # ---------- CTC --------------
-            # torch.backends.cudnn.enabled = False
-            # loss = self.loss(output, labels, mask)
-            # torch.backends.cudnn.enabled = True
-            # print_loss = loss.item()
 
+            loss, print_loss = self.loss(output, labels, mask)
             loss.backward()
             self.optimizer.step()
 
