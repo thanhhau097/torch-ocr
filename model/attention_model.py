@@ -13,9 +13,10 @@ class AttentionModel(BaseModel):
     def __init__(self, num_chars):
         super().__init__()
         self.encoder = CNNEncoder(3, 256)
+        self.AdaptiveAvgPool = nn.AdaptiveAvgPool2d((None, 1))  # replace downsample factor with AvgPool
         # in_dimension = height / self.encoder.downsample_factor * 256
         # TODO: calculate in_dimension here
-        self.rnn_encoder = BidirectionalGRU(2048, 256, 256)  # change here
+        self.rnn_encoder = BidirectionalGRU(256, 256, 256)  # change here
         self.num_chars = num_chars
         embedding = nn.Embedding(num_chars, 256)
         self.decoder = LuongAttnDecoderRNN('general', embedding, 256, num_chars)
@@ -26,7 +27,8 @@ class AttentionModel(BaseModel):
         # print('After CNN:', x.size())
 
         # ---------------- CNN TO RNN ----------------
-        x = x.permute(3, 0, 1, 2)  # from B x C x H x W -> W x B x H x C
+        x = x.permute(3, 0, 1, 2)  # from B x C x H x W -> W x B x C x H
+        x = self.AdaptiveAvgPool(x)
         size = x.size()
         x = x.reshape(size[0], size[1], size[2] * size[3])
 
