@@ -48,6 +48,7 @@ def ctc_loss(outputs, targets, target_lengths):
     targets = targets.transpose(1, 0)
     # target_lengths have EOS token, we need minus one
     target_lengths = target_lengths - 1
+    targets = targets[:, :-1]
     # print(input_lengths, target_lengths)
     # TODO: bug when target_length > input_length, we can increase size or use zero infinity
     return loss(outputs, targets, input_lengths, target_lengths)

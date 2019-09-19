@@ -11,7 +11,7 @@
         "args":{
             "data_dir": "data/",
             "json_path": "train.json",
-            "batch_size": 8,
+            "batch_size": 4,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
