@@ -1,6 +1,6 @@
 import torch.nn.functional as F
 import torch
-from torch.nn import CTCLoss
+from torch.nn import CTCLoss, CrossEntropyLoss
 from data_loader.vocab import PAD_token, EOS_token
 
 
@@ -12,17 +12,21 @@ def nll_mask_loss(outputs, targets, masks):
     USE_CUDA = torch.cuda.is_available()
     device = torch.device("cuda:0" if USE_CUDA else "cpu")
 
+    ce_loss_fn = CrossEntropyLoss(ignore_index=PAD_token)
+
     loss = 0
+    ce_loss = 0
     print_losses = []
     n_totals = 0
 
     for output, target, mask in zip(outputs, targets, masks):
         mask_loss, nTotal = sub_nll_mask_loss(output, target, mask, device)
         loss += mask_loss
+        ce_loss += ce_loss_fn(output, target)
         print_losses.append(mask_loss.item() * nTotal)
         n_totals += nTotal
 
-    return loss, sum(print_losses)/n_totals
+    return ce_loss, sum(print_losses)/n_totals
 
 
 def sub_nll_mask_loss(output, target, mask, device):

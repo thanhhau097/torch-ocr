@@ -12,11 +12,10 @@ from data_loader.vocab import SOS_token
 class AttentionModel(BaseModel):
     def __init__(self, num_chars):
         super().__init__()
-        self.encoder = CNNEncoder(3, 256)
+        out_dimension = 256
+        self.encoder = CNNEncoder(3, out_dimension)
         self.AdaptiveAvgPool = nn.AdaptiveAvgPool2d((None, 1))  # replace downsample factor with AvgPool
-        # in_dimension = height / self.encoder.downsample_factor * 256
-        # TODO: calculate in_dimension here
-        self.rnn_encoder = BidirectionalGRU(256, 256, 256)  # change here
+        self.rnn_encoder = BidirectionalGRU(out_dimension, 256, 256)  # change here
         self.num_chars = num_chars
         embedding = nn.Embedding(num_chars, 256)
         self.decoder = LuongAttnDecoderRNN('general', embedding, 256, num_chars)
@@ -58,7 +57,7 @@ class AttentionModel(BaseModel):
                 )
                 # Teacher forcing: next input is current target
                 decoder_input = labels[t].view(1, -1)
-                outputs[t] = decoder_output
+                outputs[t] = decoder_output  # batch_size * num_chars
                 # print(decoder_input.get_device())
         else:
             for t in range(max_label_length):
