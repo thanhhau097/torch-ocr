@@ -1,12 +1,9 @@
 import torch
 import torch.nn as nn
-import random
 
 from base import BaseModel
 from model.visual_encoders.cnn_encoder import CNNEncoder
 from model.rnn_encoders.rnn_encoder import BidirectionalGRU
-from model.decoders.attention_decoder import LuongAttnDecoderRNN
-from data_loader.vocab import SOS_token
 
 
 class CTCModel(BaseModel):

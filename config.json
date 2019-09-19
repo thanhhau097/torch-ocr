@@ -1,9 +1,10 @@
 {
     "name": "OCR_test",
+    "type": "attention",
     "n_gpu": 1,
 
     "arch": {
-        "type": "CTCModel",
+        "type": "AttentionModel",
         "args": {}
     },
     "data_loader": {
@@ -25,10 +26,18 @@
             "amsgrad": true
         }
     },
-    "loss": "ctc_loss",
-    "metrics": [
-        "accuracy_ctc"
-    ],
+    "loss": {
+        "ctc": "ctc_loss",
+        "attention": "nll_mask_loss"
+    },
+    "metrics": {
+        "ctc": [
+            "accuracy_ctc"
+        ],
+        "attention": [
+            "accuracy_attention"
+        ]
+    },
     "lr_scheduler": {
         "type": "StepLR",
         "args": {

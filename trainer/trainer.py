@@ -70,19 +70,16 @@ class Trainer(BaseTrainer):
             # TODO: check ctc or attention
             # nll mask loss
             # ------ ATTENTION ----------
-            # loss, print_loss = self.loss(output, labels, mask)
+            loss, print_loss = self.loss(output, labels, mask)
             # print("LOSS tensor", loss)
             # ---------- CTC --------------
-            lengths = torch.sum(mask, dim=0).to(self.device)
-
-            torch.backends.cudnn.enabled = False
-            loss = self.loss(output, labels, lengths)
-            torch.backends.cudnn.enabled = True
-            print_loss = loss.item()
+            # torch.backends.cudnn.enabled = False
+            # loss = self.loss(output, labels, mask)
+            # torch.backends.cudnn.enabled = True
+            # print_loss = loss.item()
 
             loss.backward()
             self.optimizer.step()
-
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.writer.add_scalar('loss', print_loss)
@@ -133,13 +130,12 @@ class Trainer(BaseTrainer):
         with torch.no_grad():
             for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.valid_data_loader):
                 images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
+                images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
 
                 output = self.model(images, labels, max_label_length, self.device, training=False)
-                # loss, print_losses = self.loss(output, labels, mask)  # Attention:
-                lengths = torch.sum(mask, dim=0).to(self.device)
-                loss = self.loss(output, labels, lengths)
-
-                print_loss = loss.item()
+                _, print_loss = self.loss(output, labels, mask)  # Attention:
+                # loss = self.loss(output, labels, mask)
+                # print_loss = loss.item()
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar('loss', print_loss)

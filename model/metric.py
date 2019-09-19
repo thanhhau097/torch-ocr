@@ -6,27 +6,9 @@ import itertools
 
 from data_loader.vocab import Vocab
 
-def my_metric(output, target):
-    with torch.no_grad():
-        pred = torch.argmax(output, dim=1)
-        assert pred.shape[0] == len(target)
-        correct = 0
-        correct += torch.sum(pred == target).item()
-    return correct / len(target)
-
-
-def my_metric2(output, target, k=3):
-    with torch.no_grad():
-        pred = torch.topk(output, k, dim=1)[1]
-        assert pred.shape[0] == len(target)
-        correct = 0
-        for i in range(k):
-            correct += torch.sum(pred[:, i] == target).item()
-    return correct / len(target)
-
 
 # TODO: decode for ctc
-def accuracy(outputs, targets, voc: Vocab):
+def accuracy_attention(outputs, targets, voc: Vocab):
     outputs = _get_target_from_output(outputs)
     outputs = outputs.transpose(1, 0)
     targets = targets.transpose(1, 0)

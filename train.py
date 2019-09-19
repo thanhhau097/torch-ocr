@@ -4,25 +4,27 @@ import torch
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
-import model.ctc_model as module_arch
+from model import ocr_model as module_arch
 from parse_config import ConfigParser
 from trainer import Trainer
 
 
 def main(config):
     logger = config.get_logger('train')
+    type = config['type']
 
     # setup data_loader instances
     data_loader = config.initialize('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
 
     # build model architecture, then print to console
+    # TODO: 2 types of model (CTC or attention)
     model = config.initialize('arch', module_arch)
     logger.info(model)
 
     # get function handles of loss and metrics
-    loss = getattr(module_loss, config['loss'])
-    metrics = [getattr(module_metric, met) for met in config['metrics']]
+    loss = getattr(module_loss, config['loss'][type])
+    metrics = [getattr(module_metric, met) for met in config['metrics'][type]]
 
     # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
