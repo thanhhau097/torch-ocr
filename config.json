@@ -28,7 +28,7 @@
     },
     "loss": {
         "ctc": "ctc_loss",
-        "attention": "nll_mask_loss"
+        "attention": "ce_loss"
     },
     "metrics": {
         "ctc": [

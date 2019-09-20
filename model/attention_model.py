@@ -43,7 +43,7 @@ class AttentionModel(BaseModel):
 
         # Forward batch of sequences through decoder one time step at a time
         teacher_forcing_ratio = 0.5  # TODO: change to dynamic teacher forcing
-        use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
+        use_teacher_forcing = True  # if random.random() < teacher_forcing_ratio else False
 
         outputs = torch.zeros((max_label_length, batch_size, self.num_chars), device=device)
 
