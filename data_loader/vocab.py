@@ -28,8 +28,8 @@ class Vocab(object):
             vocab_dict = json.load(f)
 
         for key, value in vocab_dict.items():
-            self.index2char[key] = value
-            self.char2index[value] = key
+            self.index2char[int(key)] = value
+            self.char2index[value] = int(key)
             self.num_chars += 1
 
     def save_vocab_dict(self):

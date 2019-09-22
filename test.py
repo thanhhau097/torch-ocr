@@ -1,5 +1,6 @@
 import argparse
 import torch
+import numpy as np
 from tqdm import tqdm
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
@@ -9,15 +10,17 @@ from parse_config import ConfigParser
 
 
 def main(config):
+    # TODO: not found char from train_dataset -> error when validate
     logger = config.get_logger('test')
 
     # setup data_loader instances
+    json_path = 'test.json'
     data_loader = getattr(module_data, config['data_loader']['type'])(
         config['data_loader']['args']['data_dir'],
+        json_path,
         batch_size=512,
         shuffle=False,
         validation_split=0.0,
-        training=False,
         num_workers=2
     )
 
@@ -29,9 +32,12 @@ def main(config):
     model = config.initialize('arch', module_arch, **kwarg)
     logger.info(model)
 
+    #
+    model_type = config['type']
+
     # get function handles of loss and metrics
-    loss_fn = getattr(module_loss, config['loss'])
-    metric_fns = [getattr(module_metric, met) for met in config['metrics']]
+    loss_fn = getattr(module_loss, config['loss'][model_type])
+    metric_fns = [getattr(module_metric, met) for met in config['metrics'][model_type]]
 
     logger.info('Loading checkpoint: {} ...'.format(config.resume))
     checkpoint = torch.load(config.resume)
@@ -46,7 +52,7 @@ def main(config):
     model.eval()
 
     total_loss = 0.0
-    total_metrics = torch.zeros(2)
+    total_metrics = np.zeros(2)
     # total_metrics = torch.zeros(len(metric_fns))
 
     with torch.no_grad():
@@ -55,14 +61,14 @@ def main(config):
 
             output = model(images, labels, max_label_length, device, training=False)
             # loss, print_losses = self.loss(output, labels, mask)  # Attention:
-            lengths = torch.sum(mask, dim=0).to(device)
-            loss, print_loss = loss_fn(output, labels, lengths)
+            # lengths = torch.sum(mask, dim=0).to(device)
+            loss, print_loss = loss_fn(output, labels, mask)
 
             # batch_size = data.shape[0]
-            total_loss += print_loss # loss.item() * batch_size
+            total_loss += print_loss  # loss.item() * batch_size
             # for i, metric in enumerate(metric_fns):
             #     total_metrics[i] += metric(output, target) * batch_size
-            total_metrics += metric_fns[0](output, labels)
+            total_metrics += metric_fns[0](output, labels, voc)
 
     # n_samples = len(data_loader.sampler)
     n_batches = len(data_loader)
@@ -83,6 +89,9 @@ if __name__ == '__main__':
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
+    args.add_argument('-c', '--config', default='config.json', type=str,
+                      help='indices of GPUs to enable (default: all)')
+
 
     config = ConfigParser(args)
     main(config)
