@@ -9,15 +9,19 @@ from data_loader.vocab import Vocab
 # TODO: add training=True/False, when testing, we need to load vocab, not build vocab
 class OCRDataset(Dataset):
     """Read dataset for OCR"""
-    def __init__(self, data_dir, json_path, transform=None, channels=3):
+    def __init__(self, data_dir, json_path, transform=None, training=True, channels=3):
         self.data_dir = data_dir
         self.json_path = json_path
         self.transform = transform
         self.channels = channels
 
         self.image_paths, self.labels = self.__get_image_paths_and_labels(self.get_data_path(json_path))
-        self.voc = self.build_vocab(self.labels)
-        self.voc.save_vocab_dict()
+        if training:
+            self.voc = self.build_vocab(self.labels)
+            self.voc.save_vocab_dict()
+        else:
+            self.voc = Vocab()
+            self.voc.build_vocab_from_char_dict_file(self.get_data_path('vocab.json'))
 
     def __len__(self):
         return len(self.image_paths)

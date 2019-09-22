@@ -11,6 +11,7 @@ class OCRDataLoader(BaseDataLoader):
     """
     def __init__(self, data_dir, json_path, batch_size,
                  collate_fn=collate_wrapper,
+                 training=True,
                  shuffle=True,
                  validation_split=0.0, num_workers=1):
         # self.height = 32
@@ -21,7 +22,7 @@ class OCRDataLoader(BaseDataLoader):
         ])
         self.data_dir = data_dir
         self.json_path = json_path
-        self.dataset = OCRDataset(data_dir, json_path, trsfm)
+        self.dataset = OCRDataset(data_dir, json_path, trsfm, training=training)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers, collate_fn=collate_fn)
 
     def get_vocab(self):
