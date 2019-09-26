@@ -16,7 +16,7 @@ class CTCModel(BaseModel):
         self.num_chars = num_chars
         self.decoder = nn.Linear(256, self.num_chars)
 
-    def forward(self, x, labels, max_label_length, device, training=True):
+    def forward(self, x, labels=None, max_label_length=None, device=None, training=True):
         # ---------------- CNN ENCODER --------------
         x = self.encoder(x)
         # print('After CNN:', x.size())
