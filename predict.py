@@ -5,39 +5,41 @@ import numpy as np
 from data_loader.collate import process_image
 import itertools
 
-# TODO: currently only work with CTC model
-def process(image):
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    voc = Vocab()
-    voc.build_vocab_from_char_dict_file('data/vocab.json')
+class LionelOCR():
+    def __init__(self, weights_path, vocab_path):
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.voc = Vocab()
+        self.voc.build_vocab_from_char_dict_file(vocab_path)
+        self.model = CTCModel(self.voc.num_chars)
+        self.model = self.model.to(self.device)
 
-    model = CTCModel(voc.num_chars)
+        # # LOAD MODEL
+        # checkpoint = torch.load(weights_path)
+        # state_dict = checkpoint['state_dict']
+        # model.load_state_dict(state_dict)
 
-    model = model.to(device)
+    def process(self, image):
+        self.model.eval()
+        # preprocess image, TODO: height = 64 (no need but to be more accurate)
+        image = process_image(image)
+        images = np.array([image])
+        images = images.transpose((0, 3, 1, 2))
+        images = torch.from_numpy(images).float()
+        images = images.to(self.device)
 
-    # # LOAD MODEL
-    # weights_path = 'saved/models/OCR_test/0920_132220/checkpoint-epoch42.pth'
-    # checkpoint = torch.load(weights_path)
-    # state_dict = checkpoint['state_dict']
-    # model.load_state_dict(state_dict)
+        outputs = self.model(images)
+        outputs = outputs.permute(1, 0, 2)
+        output = outputs[0]
 
-    model.eval()
+        out_best = list(torch.argmax(output, -1))  # [2:]
+        out_best = [k for k, g in itertools.groupby(out_best)]
+        pred_text = self.voc.get_label_from_indices(out_best)
 
-    # preprocess image, TODO: height = 64 (no need but to be more accurate)
-    image = process_image(image)
-    images = np.array([image])
-    images = images.transpose((0, 3, 1, 2))
-    images = torch.from_numpy(images).float()
-    images = images.to(device)
-    outputs = model(images)
-    outputs = outputs.permute(1, 0, 2)
-    output = outputs[0]
-    out_best = list(torch.argmax(output, -1))  # [2:]
-    out_best = [k for k, g in itertools.groupby(out_best)]
-    pred_text = voc.get_label_from_indices(out_best)
-    print(pred_text)
+        return pred_text, 1
+
 
 if __name__ == '__main__':
     image = np.zeros([45, 100, 3])
-    process(image)
+    model = LionelOCR('weights_path', 'data/vocab.json')
+    print(model.process(image))
