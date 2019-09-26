@@ -41,5 +41,5 @@ class LionelOCR():
 
 if __name__ == '__main__':
     image = np.zeros([45, 100, 3])
-    model = LionelOCR('weights_path', 'data/vocab.json')
+    model = LionelOCR('saved/check', 'data/vocab.json')
     print(model.process(image))
