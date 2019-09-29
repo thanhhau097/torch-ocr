@@ -8,14 +8,15 @@ import itertools
 
 class LionelOCR():
     def __init__(self, weights_path, vocab_path):
-        # self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.device = torch.device('cpu')
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        # self.device = torch.device('cpu')
         self.voc = Vocab()
         self.voc.build_vocab_from_char_dict_file(vocab_path)
         self.model = CTCModel(self.voc.num_chars)
         self.model = self.model.to(self.device)
 
         # LOAD MODEL
+        print("LOADING PRETRAINED WEIGHTS ...")
         checkpoint = torch.load(weights_path, map_location=torch.device('cpu'))
         state_dict = checkpoint['state_dict']
         self.model.load_state_dict(state_dict)
