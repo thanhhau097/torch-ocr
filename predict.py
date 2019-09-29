@@ -42,6 +42,6 @@ class LionelOCR():
 
 if __name__ == '__main__':
     image = np.zeros([45, 100, 3])
-    path = 'saved/checkpoint-epoch10.pth'
+    path = 'saved/model_best.pth'
     model = LionelOCR(path, 'data/vocab.json')
     print(model.process(image))
