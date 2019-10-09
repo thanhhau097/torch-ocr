@@ -1,14 +1,14 @@
 import argparse
 
-import ocr.data_loader.data_loaders as module_data
-import ocr.model.loss as module_loss
-import ocr.model.ocr_model as module_arch
 import numpy as np
 import torch
 from tqdm import tqdm
 
+import ocr.data_loader.data_loaders as module_data
+import ocr.model.loss as module_loss
 import ocr.model.metric as module_metric
-from ocr.parse_config import ConfigParser
+import ocr.model.ocr_model as module_arch
+from parse_config import ConfigParser
 
 
 def main(config):
