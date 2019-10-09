@@ -1,9 +1,11 @@
-import torch
-from model.ctc_model import CTCModel
-from data_loader.vocab import Vocab
-import numpy as np
-from data_loader.collate import process_image
 import itertools
+
+import numpy as np
+import torch
+from ocr.data_loader.vocab import Vocab
+from ocr.model.ctc_model import CTCModel
+
+from ocr.data_loader.collate import process_image
 
 
 class LionelOCR():
@@ -42,7 +44,10 @@ class LionelOCR():
 
 
 if __name__ == '__main__':
-    image = np.zeros([45, 100, 3])
+    import cv2
+    path = 'data/sample/56/5/264_ENGROSSING_25813.jpg'
+    image = cv2.imread(path)
+    print(image.shape)
     path = 'saved/model_best.pth'
     model = LionelOCR(path, 'data/vocab.json')
     print(model.process(image))

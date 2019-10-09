@@ -1,12 +1,14 @@
 import argparse
 import collections
+
+import ocr.data_loader.data_loaders as module_data
+import ocr.model.loss as module_loss
 import torch
-import data_loader.data_loaders as module_data
-import model.loss as module_loss
-import model.metric as module_metric
-from model import ocr_model as module_arch
-from parse_config import ConfigParser
-from trainer import Trainer
+from ocr.model import ocr_model as module_arch
+
+import ocr.model.metric as module_metric
+from ocr.parse_config import ConfigParser
+from ocr.trainer import Trainer
 
 
 def main(config):

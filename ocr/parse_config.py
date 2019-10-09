@@ -1,11 +1,12 @@
-import os
 import logging
-from pathlib import Path
+import os
+from datetime import datetime
 from functools import reduce
 from operator import getitem
-from datetime import datetime
-from logger import setup_logging
-from utils import read_json, write_json
+from pathlib import Path
+
+from ocr.logger import setup_logging
+from ocr.utils import read_json, write_json
 
 
 class ConfigParser:

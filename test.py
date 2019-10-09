@@ -1,12 +1,14 @@
 import argparse
-import torch
+
+import ocr.data_loader.data_loaders as module_data
+import ocr.model.loss as module_loss
+import ocr.model.ocr_model as module_arch
 import numpy as np
+import torch
 from tqdm import tqdm
-import data_loader.data_loaders as module_data
-import model.loss as module_loss
-import model.metric as module_metric
-import model.ocr_model as module_arch
-from parse_config import ConfigParser
+
+import ocr.model.metric as module_metric
+from ocr.parse_config import ConfigParser
 
 
 def main(config):
@@ -92,7 +94,6 @@ if __name__ == '__main__':
                       help='indices of GPUs to enable (default: all)')
     args.add_argument('-c', '--config', default='config.json', type=str,
                       help='indices of GPUs to enable (default: all)')
-
 
     config = ConfigParser(args)
     main(config)
