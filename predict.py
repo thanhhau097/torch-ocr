@@ -48,6 +48,6 @@ if __name__ == '__main__':
     path = 'data/sample/56/5/264_ENGROSSING_25813.jpg'
     image = cv2.imread(path)
     print(image.shape)
-    path = 'saved/model_best.pth'
+    path = 'ocr/saved/model_best.pth'
     model = LionelOCR(path, 'data/vocab.json')
     print(model.process(image))
