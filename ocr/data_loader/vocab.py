@@ -44,7 +44,8 @@ class Vocab(object):
     def get_indices_from_label(self, label):
         indices = []
         for char in label:
-            indices.append(self.char2index[char])
+            if self.char2index.get(char) is not None:
+                indices.append(self.char2index[char])
 
         indices.append(EOS_token)
         return indices

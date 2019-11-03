@@ -21,7 +21,7 @@ def main(config):
         config['data_loader']['args']['data_dir'],
         json_path,
         training=False,
-        batch_size=512,
+        batch_size=1,
         shuffle=False,
         validation_split=0.0,
         num_workers=2
@@ -43,7 +43,10 @@ def main(config):
     metric_fns = [getattr(module_metric, met) for met in config['metrics'][model_type]]
 
     logger.info('Loading checkpoint: {} ...'.format(config.resume))
-    checkpoint = torch.load(config.resume)
+    if torch.cuda.is_available():
+        checkpoint = torch.load(config.resume)
+    else:
+        checkpoint = torch.load(config.resume, map_location=torch.device('cpu'))
     state_dict = checkpoint['state_dict']
     if config['n_gpu'] > 1:
         model = torch.nn.DataParallel(model)
@@ -88,11 +91,11 @@ def main(config):
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
 
-    args.add_argument('-r', '--resume', default=None, type=str,
+    args.add_argument('-r', '--resume', default='saved/model_best.pth', type=str,
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
-    args.add_argument('-c', '--config', default='config.json', type=str,
+    args.add_argument('-c', '--config', default='ocr/config.json', type=str,
                       help='indices of GPUs to enable (default: all)')
 
     config = ConfigParser(args)

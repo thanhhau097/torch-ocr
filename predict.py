@@ -45,9 +45,17 @@ class LionelOCR():
 
 if __name__ == '__main__':
     import cv2
-    path = 'data/sample/56/5/264_ENGROSSING_25813.jpg'
-    image = cv2.imread(path)
-    print(image.shape)
+    import json
+    import os
+
     path = 'ocr/saved/model_best.pth'
     model = LionelOCR(path, 'data/vocab.json')
-    print(model.process(image))
+
+    with open('data/test.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    for name, label in data.items():
+        path = os.path.join('data', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
+        image = cv2.imread(path)
+        print(label)
+        print(model.process(image)[0])
