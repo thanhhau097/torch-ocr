@@ -1,12 +1,14 @@
 import argparse
 import collections
+
 import torch
-import data_loader.data_loaders as module_data
-import model.loss as module_loss
-import model.metric as module_metric
-from model import ocr_model as module_arch
+
+import ocr.data_loader.data_loaders as module_data
+import ocr.model.loss as module_loss
+import ocr.model.metric as module_metric
+from ocr.model import ocr_model as module_arch
+from ocr.trainer import Trainer
 from parse_config import ConfigParser
-from trainer import Trainer
 
 
 def main(config):
@@ -46,7 +48,7 @@ def main(config):
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
-    args.add_argument('-c', '--config', default=None, type=str,
+    args.add_argument('-c', '--config', default='ocr/config.json', type=str,
                       help='config file path (default: None)')
     args.add_argument('-r', '--resume', default=None, type=str,
                       help='path to latest checkpoint (default: None)')

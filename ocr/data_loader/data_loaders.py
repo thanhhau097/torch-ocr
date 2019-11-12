@@ -1,8 +1,8 @@
-from torchvision import datasets, transforms
+from ocr.base import BaseDataLoader
+from ocr.data_loader.dataset import OCRDataset
+from torchvision import transforms
 
-from base import BaseDataLoader
-from data_loader.dataset import OCRDataset
-from data_loader.collate import collate_wrapper
+from ocr.data_loader.collate import collate_wrapper
 
 
 class OCRDataLoader(BaseDataLoader):

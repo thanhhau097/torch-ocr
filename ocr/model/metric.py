@@ -1,10 +1,9 @@
-import torch
 import difflib
-import numpy as np
 import itertools
 
-
-from data_loader.vocab import Vocab
+import numpy as np
+import torch
+from ocr.data_loader.vocab import Vocab
 
 
 def accuracy_attention(outputs, targets, voc: Vocab):
@@ -82,9 +81,9 @@ def _get_target_from_output(output):
 
 
 if __name__ == '__main__':
-    from data_loader.data_loaders import OCRDataLoader
-    from data_loader.collate import collate_wrapper
-    from model.attention_model import AttentionModel
+    from ocr.data_loader.data_loaders import OCRDataLoader
+    from ocr.data_loader.collate import collate_wrapper
+    from ocr.model import AttentionModel
 
     dataloader = OCRDataLoader('../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))

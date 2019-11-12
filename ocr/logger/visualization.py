@@ -1,5 +1,6 @@
 import importlib
-from utils import Timer
+
+from ocr.utils import Timer
 
 
 class TensorboardWriter():
