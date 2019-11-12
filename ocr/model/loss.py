@@ -1,7 +1,8 @@
-import torch.nn.functional as F
 import torch
+import torch.nn.functional as F
 from torch.nn import CTCLoss, CrossEntropyLoss
-from data_loader.vocab import PAD_token, EOS_token
+
+from ocr.data_loader.vocab import PAD_token, EOS_token
 
 
 def nll_loss(output, target):
