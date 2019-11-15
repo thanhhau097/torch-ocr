@@ -42,9 +42,10 @@ def create_strings_from_dict(length, allow_variable, count, lang_dict):
     return strings
 
 
-def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=10):
+def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=20):
     """
         Create all string by randomly picking Wikipedia articles and taking sentences from them.
+        Change max_length corresponding to number of characters
     """
     sentences = []
 
@@ -60,7 +61,8 @@ def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=10
         # Only take a certain length
         lines = list(
             filter(
-                lambda s: len(s.split(" ")) > minimum_length and len(s.split(' ')) <= maximum_length
+                # lambda s: len(s.split(" ")) > minimum_length and len(s.split(' ')) <= maximum_length
+                lambda s: len(s) >= minimum_length and len(s) <= maximum_length
                 and not "Wikipedia" in s
                 and not "wikipedia" in s,
                 [

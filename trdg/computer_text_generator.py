@@ -2,6 +2,7 @@ import random as rnd
 
 from PIL import Image, ImageColor, ImageFont, ImageDraw, ImageFilter
 
+from fontTools.ttLib import TTFont
 
 def generate(text, font, text_color, font_size, orientation, space_width, fit):
     if orientation == 0:
@@ -16,7 +17,20 @@ def generate(text, font, text_color, font_size, orientation, space_width, fit):
         raise ValueError("Unknown orientation " + str(orientation))
 
 
+def check_valid_character(text, font_path):
+    font = TTFont(font_path)
+
+    for c in text:
+        for table in font['cmap'].tables:
+            if ord(c) in table.cmap.keys():
+                continue
+            else:
+                return False
+    return True
+
+
 def _generate_horizontal_text(text, font, text_color, font_size, space_width, fit):
+    # print(font)
     image_font = ImageFont.truetype(font=font, size=font_size)
     words = text.split(" ")
     space_width = image_font.getsize(" ")[0] * space_width
