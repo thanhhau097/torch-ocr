@@ -76,6 +76,7 @@ def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=20
 
         # Remove the last lines that talks about contributing
         sentences.extend(lines[0 : max([1, len(lines) - 5])])
+        print('len of sentences: ', len(sentences))
 
     return sentences[0:count]
 
