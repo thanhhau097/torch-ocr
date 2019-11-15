@@ -51,7 +51,9 @@ def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=20
 
     while len(sentences) < count:
         # We fetch a random page
-        page = requests.get("https://{}.wikipedia.org/wiki/Special:Random".format(lang))
+        path = "https://{}.wikipedia.org/wiki/Special:Random".format(lang)
+        print("requesting new page:", path)
+        page = requests.get(path)
 
         soup = BeautifulSoup(page.text, "html.parser")
 
