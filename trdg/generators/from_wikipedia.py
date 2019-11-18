@@ -63,7 +63,7 @@ class GeneratorFromWikipedia:
         return self.next()
 
     def next(self):
-        if self.generator.generated_count <= 999:
+        if self.generator.generated_count >= 999:
             self.generator.strings = create_strings_from_wikipedia(
                 self.minimum_length, 1000, self.language
             )
