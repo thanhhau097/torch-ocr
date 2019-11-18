@@ -67,4 +67,5 @@ class GeneratorFromWikipedia:
             self.generator.strings = create_strings_from_wikipedia(
                 self.minimum_length, 1000, self.language
             )
+            self.generator.generated_count = 0
         return self.generator.next()
