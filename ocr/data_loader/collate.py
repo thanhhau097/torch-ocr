@@ -38,7 +38,10 @@ def collate_wrapper(batch):
 
     for sample in batch:
         image = sample['image']
-        image = process_image(image, height=height, channels=image.shape[2])
+        try:
+            image = process_image(image, height=height, channels=image.shape[2])
+        except:
+            continue
 
         if image.shape[1] > max_width:
             max_width = image.shape[1]
