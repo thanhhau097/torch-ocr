@@ -30,7 +30,7 @@ def check_valid_character(text, font_path):
 
 
 def _generate_horizontal_text(text, font, text_color, font_size, space_width, fit):
-    # print(font)
+    print(font)
     image_font = ImageFont.truetype(font=font, size=font_size)
     words = text.split(" ")
     space_width = image_font.getsize(" ")[0] * space_width
