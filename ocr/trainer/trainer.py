@@ -122,7 +122,6 @@ class Trainer(BaseTrainer):
         with torch.no_grad():
             print("Length of validation:", len(self.valid_data_loader))
             for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.valid_data_loader):
-                print(batch_idx)
                 images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
                 images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
 
