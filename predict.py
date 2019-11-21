@@ -48,7 +48,7 @@ if __name__ == '__main__':
     import json
     import os
 
-    path = 'saved/model_best_2.pth'
+    path = 'saved/model_best_3.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
     with open('data/real/printed.json', 'r', encoding='utf-8') as f:

@@ -4,9 +4,9 @@ import numpy as np
 
 if __name__ == '__main__':
     import cv2
-    generator = GeneratorFromWikipedia(count=100, size=64, language='ja',
+    generator = GeneratorFromWikipedia(count=100, size=40, language='ja',
                                        skewing_angle=2, random_skew=True, blur=1, random_blur=True,
-                                       background_type=3, distorsion_type=-1)
+                                       background_type=3, distorsion_type=-1, margins=(2, 2, 2, 2))
 
     print('Start generating ...')
     for i, (img, lbl) in enumerate(generator):
