@@ -17,7 +17,7 @@ def main(config):
 
     # setup data_loader instances
     json_path = 'test.json'
-    data_loader = getattr(module_data, config['data_loader']['type'])(
+    data_loader = getattr(module_data, "OCRDataLoader")( # config['data_loader']['type']
         config['data_loader']['args']['data_dir'],
         json_path,
         training=False,
@@ -91,7 +91,7 @@ def main(config):
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
 
-    args.add_argument('-r', '--resume', default='saved/model_best.pth', type=str,
+    args.add_argument('-r', '--resume', default='saved/model_best_2.pth', type=str,
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')

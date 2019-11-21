@@ -48,14 +48,18 @@ if __name__ == '__main__':
     import json
     import os
 
-    path = 'ocr/saved/model_best.pth'
+    path = 'saved/model_best_2.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
-    with open('data/test.json', 'r', encoding='utf-8') as f:
+    with open('data/real/printed.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     for name, label in data.items():
-        path = os.path.join('data', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
+        path = os.path.join('data/real/printed/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
         image = cv2.imread(path)
+        # padding
+        new_image = np.zeros([image.shape[0] + 10, image.shape[1] + 10, image.shape[2]])
+        new_image[5:image.shape[0] + 5, 5:image.shape[1] + 5, :] = image
+
         print(label)
-        print(model.process(image)[0])
+        print(model.process(new_image)[0])

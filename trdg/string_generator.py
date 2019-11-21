@@ -42,7 +42,7 @@ def create_strings_from_dict(length, allow_variable, count, lang_dict):
     return strings
 
 
-def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=40):
+def create_strings_from_wikipedia(minimum_length, count, lang, maximum_length=80):
     """
         Create all string by randomly picking Wikipedia articles and taking sentences from them.
         Change max_length corresponding to number of characters
