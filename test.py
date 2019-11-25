@@ -91,7 +91,7 @@ def main(config):
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
 
-    args.add_argument('-r', '--resume', default='saved/model_best.pth', type=str,
+    args.add_argument('-r', '--resume', default='saved/model_best_real_data_2.pth', type=str,
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
