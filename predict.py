@@ -48,17 +48,17 @@ if __name__ == '__main__':
     import json
     import os
 
-    path = 'saved/checkpoint-epoch50.pth'
+    path = 'saved/model_best_real_data_2.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
-    with open('data/real/printed.json', 'r', encoding='utf-8') as f:
+    with open('data/daiichi4/daiichi4.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     for name, label in data.items():
-        path = os.path.join('data/real/printed/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
+        path = os.path.join('data/daiichi4/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
         image = cv2.imread(path)
         # padding
-        padding = 3
+        padding = 0
         new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
         new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
 
