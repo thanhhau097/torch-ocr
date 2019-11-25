@@ -43,6 +43,15 @@ class LionelOCR():
         return pred_text, 1
 
 
+def use_rules(text):
+    # char_dict = {}
+    ignored_characters = [',', '。', '.', '、']
+    for char in ignored_characters:
+        text = text.replace(char, '')
+
+    return ''.join(text.split(' '))
+
+
 if __name__ == '__main__':
     import cv2
     import json
@@ -54,13 +63,16 @@ if __name__ == '__main__':
     with open('data/daiichi4/daiichi4.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    for name, label in data.items():
+    total_true = 0
+    for i, (name, label) in enumerate(data.items()):
         path = os.path.join('data/daiichi4/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
         image = cv2.imread(path)
         # padding
         padding = 0
         new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
         new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
-
-        print(label)
-        print(model.process(new_image)[0])
+        total_true += int(use_rules(label) == use_rules(model.process(new_image)[0]))
+        # print(use_rules(label))
+        # print(use_rules(model.process(new_image)[0]))
+        if i % 100 == 0:
+            print(total_true, '/', i+1, '=', total_true/(i + 1))
