@@ -44,10 +44,17 @@ class LionelOCR():
 
 
 def use_rules(text):
-    # char_dict = {}
+    char_dict = {
+        '0': '0',
+        'O': '0',
+        'つ': 'っ'
+    }
     ignored_characters = [',', '。', '.', '、']
     for char in ignored_characters:
         text = text.replace(char, '')
+
+    for k, v in char_dict.items():
+        text = text.replace(k, v)
 
     return ''.join(text.split(' '))
 
@@ -71,7 +78,9 @@ if __name__ == '__main__':
         padding = 0
         new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
         new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
-        total_true += int(use_rules(label) == use_rules(model.process(new_image)[0]))
+        predicted = use_rules(label)
+        ground_truth = use_rules(model.process(new_image)[0])
+        total_true += int(predicted == ground_truth)
         # print(use_rules(label))
         # print(use_rules(model.process(new_image)[0]))
         if i % 100 == 0:
