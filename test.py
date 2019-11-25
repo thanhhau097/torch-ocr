@@ -16,7 +16,7 @@ def main(config):
     logger = config.get_logger('test')
 
     # setup data_loader instances
-    json_path = 'test.json'
+    json_path = 'daiichi4.json'
     data_loader = getattr(module_data, config['data_loader']['type'])(
         config['data_loader']['args']['data_dir'],
         json_path,
