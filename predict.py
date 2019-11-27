@@ -26,7 +26,7 @@ class LionelOCR():
     def process(self, image):
         self.model.eval()
         # preprocess image, TODO: height = 64 (no need but to be more accurate)
-        batch = [{'image': image, 'label': '123'}]
+        batch = [{'image': image, 'label': [1]}]
         images = collate_wrapper(batch)[0]
 
         # image = process_image(image)
