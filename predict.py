@@ -78,11 +78,11 @@ if __name__ == '__main__':
         padding = 0
         new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
         new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
-        predicted = use_rules(label)
-        ground_truth = use_rules(model.process(new_image)[0])
+        predicted = label #use_rules(label)
+        ground_truth = model.process(new_image)[0] # use_rules(model.process(new_image)[0])
         total_true += int(predicted == ground_truth)
-        if i % 20 == 0:
-            print(use_rules(label))
-            print(use_rules(model.process(new_image)[0]))
+        # if i % 20 == 0:
+        #     print(use_rules(label))
+        #     print(use_rules(model.process(new_image)[0]))
         if i % 100 == 0:
             print(total_true, '/', i+1, '=', total_true/(i + 1))
