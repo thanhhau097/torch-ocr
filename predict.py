@@ -81,7 +81,8 @@ if __name__ == '__main__':
         predicted = use_rules(label)
         ground_truth = use_rules(model.process(new_image)[0])
         total_true += int(predicted == ground_truth)
-        # print(use_rules(label))
-        # print(use_rules(model.process(new_image)[0]))
+        if i % 20 == 0:
+            print(use_rules(label))
+            print(use_rules(model.process(new_image)[0]))
         if i % 100 == 0:
             print(total_true, '/', i+1, '=', total_true/(i + 1))
