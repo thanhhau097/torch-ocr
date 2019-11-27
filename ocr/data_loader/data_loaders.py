@@ -22,7 +22,7 @@ class OCRDataLoader(BaseDataLoader):
         ])
         self.data_dir = data_dir
         self.json_path = json_path
-        self.dataset = OCRDataset(data_dir, json_path, trsfm, training=training)
+        self.dataset = OCRDataset(data_dir, json_path, trsfm, training=False)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers, collate_fn=collate_fn)
 
     def get_vocab(self):
