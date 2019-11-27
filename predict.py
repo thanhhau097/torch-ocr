@@ -5,7 +5,7 @@ import torch
 from ocr.data_loader.vocab import Vocab
 from ocr.model.ctc_model import CTCModel
 
-from ocr.data_loader.collate import process_image, process_batch_images
+from ocr.data_loader.collate import process_image, process_batch_images, collate_wrapper
 
 
 class LionelOCR():
@@ -26,10 +26,13 @@ class LionelOCR():
     def process(self, image):
         self.model.eval()
         # preprocess image, TODO: height = 64 (no need but to be more accurate)
-        image = process_image(image)
-        images = np.array([image])
-        images = images.transpose((0, 3, 1, 2))
-        images = torch.from_numpy(images).float()
+        batch = [{'image': image, 'label': '123'}]
+        images = collate_wrapper(batch)[0]
+
+        # image = process_image(image)
+        # images = np.array([image])
+        # images = images.transpose((0, 3, 1, 2))
+        # images = torch.from_numpy(images).float()
         images = images.to(self.device)
 
         outputs = self.model(images)
