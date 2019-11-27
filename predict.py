@@ -5,7 +5,7 @@ import torch
 from ocr.data_loader.vocab import Vocab
 from ocr.model.ctc_model import CTCModel
 
-from ocr.data_loader.collate import process_image
+from ocr.data_loader.collate import process_image, process_batch_images
 
 
 class LionelOCR():
@@ -75,12 +75,13 @@ if __name__ == '__main__':
         path = os.path.join('data/daiichi4/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
         image = cv2.imread(path)
         # padding
-        padding = 0
-        new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
-        new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
+        # padding = 0
+        # new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
+        # new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
         predicted = label #use_rules(label)
-        ground_truth = model.process(new_image)[0] # use_rules(model.process(new_image)[0])
-        total_true += int(predicted == ground_truth)
+        ground_truth = model.process(image)[0] # use_rules(model.process(new_image)[0])
+        if predicted == ground_truth:
+            total_true += 1
         # if i % 20 == 0:
         #     print(use_rules(label))
         #     print(use_rules(model.process(new_image)[0]))
