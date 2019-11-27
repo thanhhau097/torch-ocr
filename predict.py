@@ -64,10 +64,10 @@ if __name__ == '__main__':
     import json
     import os
 
-    path = 'saved/model_best_real_data_2.pth'
+    path = 'saved/model_best.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
-    with open('data/daiichi4/val.json', 'r', encoding='utf-8') as f:
+    with open('data/daiichi4/test.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     total_true = 0
