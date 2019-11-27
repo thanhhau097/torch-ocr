@@ -67,7 +67,7 @@ if __name__ == '__main__':
     path = 'saved/model_best_real_data_2.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
-    with open('data/daiichi4/daiichi4.json', 'r', encoding='utf-8') as f:
+    with open('data/daiichi4/val.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     total_true = 0
