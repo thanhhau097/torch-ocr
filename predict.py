@@ -85,5 +85,5 @@ if __name__ == '__main__':
         # if i % 20 == 0:
         #     print(use_rules(label))
         #     print(use_rules(model.process(new_image)[0]))
-        if i % 100 == 0:
-            print(total_true, '/', i+1, '=', total_true/(i + 1))
+        # if i % 100 == 0:
+        print(total_true, '/', i+1, '=', total_true/(i + 1))
