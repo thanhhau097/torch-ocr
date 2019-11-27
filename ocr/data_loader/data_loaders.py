@@ -28,6 +28,17 @@ class OCRDataLoader(BaseDataLoader):
     def get_vocab(self):
         return self.dataset.get_vocab()
 
+    def split_validation(self):
+        val_dataloader = OCRDataLoader(data_dir='./data/daiichi4/',
+                                       json_path='val.json',
+                                       batch_size=self.batch_size,
+                                       training=False,
+                                       shuffle=False,
+                                       num_workers=4,
+                                       collate_fn=collate_wrapper)
+
+        return val_dataloader
+
 
 if __name__ == '__main__':
     dataloader = OCRDataLoader('../data', 'train.json', 4, collate_fn=collate_wrapper)
