@@ -110,3 +110,9 @@ datasets/
 .vscode/
 .idea/
 __MACOSX/
+
+# models
+trdg/handwritten_model/*
+trdg/handwritten_model/pictures/*
+trdg/fonts/*
+trdg/pictures/*
