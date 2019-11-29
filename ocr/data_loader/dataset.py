@@ -4,7 +4,7 @@ import os
 import cv2
 from torch.utils.data import Dataset
 
-from ocr.data_loader.vocab import Vocab
+from ..data_loader.vocab import Vocab
 
 
 # TODO: add training=True/False, when testing, we need to load vocab, not build vocab

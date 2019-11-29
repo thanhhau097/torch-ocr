@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 from ocr.base import BaseModel
-from ocr.data_loader.vocab import SOS_token
-from ocr.model.decoders.attention_decoder import LuongAttnDecoderRNN
-from ocr.model.visual_encoders.cnn_encoder import CNNEncoder
+from ..data_loader.vocab import SOS_token
+from ..model.decoders.attention_decoder import LuongAttnDecoderRNN
+from ..model.visual_encoders.cnn_encoder import CNNEncoder
 
-from ocr.model.rnn_encoders.rnn_encoder import BidirectionalGRU
+from ..model.rnn_encoders.rnn_encoder import BidirectionalGRU
 
 
 class AttentionModel(BaseModel):
@@ -74,8 +74,8 @@ class AttentionModel(BaseModel):
 
 
 if __name__ == '__main__':
-    from ocr.data_loader.data_loaders import OCRDataLoader
-    from ocr.data_loader.collate import collate_wrapper
+    from ..data_loader.data_loaders import OCRDataLoader
+    from ..data_loader.collate import collate_wrapper
 
     dataloader = OCRDataLoader('../data', 'train.json', 4, collate_fn=collate_wrapper)
     item = next(iter(dataloader))

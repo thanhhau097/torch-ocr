@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import torch
 
-from ocr.data_loader.vocab import PAD_token
+from ..data_loader.vocab import PAD_token
 
 
 class OCRCollate:
