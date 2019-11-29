@@ -2,8 +2,8 @@ import numpy as np
 import torch
 from torchvision.utils import make_grid
 
-from ocr.base import BaseTrainer
-from ocr.utils import inf_loop
+from ..base import BaseTrainer
+from ..utils import inf_loop
 
 
 class Trainer(BaseTrainer):

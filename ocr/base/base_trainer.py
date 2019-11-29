@@ -3,7 +3,7 @@ from abc import abstractmethod
 import torch
 from numpy import inf
 
-from ocr.logger import TensorboardWriter
+from ..logger import TensorboardWriter
 
 
 class BaseTrainer:

@@ -1,5 +1,5 @@
 import torch
-from ocr.model.decoders.attention import Attn
+from ...model.decoders.attention import Attn
 from torch import nn
 
 

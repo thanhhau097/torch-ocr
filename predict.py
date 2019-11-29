@@ -5,7 +5,7 @@ import torch
 from ocr.data_loader.vocab import Vocab
 from ocr.model.ctc_model import CTCModel
 
-from ocr.data_loader.collate import process_image, process_batch_images, collate_wrapper
+from ocr.data_loader.collate import collate_wrapper
 
 
 class LionelOCR():
