@@ -144,12 +144,24 @@ class BaseTrainer:
             'monitor_best': self.mnt_best,
             'config': self.config
         }
+        
         filename = str(self.checkpoint_dir / 'checkpoint-epoch{}.pth'.format(epoch))
         torch.save(state, filename)
+        
+        
+        model_only = {
+            'state_dict': self.model.state_dict()
+        }
+        model_filename = str(self.checkpoint_dir / 'model-epoch{}.pth'.format(epoch))
+        torch.save(model_only, filename)
+        
         self.logger.info("Saving checkpoint: {} ...".format(filename))
         if save_best:
             best_path = str(self.checkpoint_dir / 'model_best.pth')
+            best_model_only_path = str(self.checkpoint_dir / 'model_only_best.pth')
             torch.save(state, best_path)
+            torch.save(model_only, best_model_only_path)
+            
             self.logger.info("Saving current best: model_best.pth ...")
 
     def _resume_checkpoint(self, resume_path):
