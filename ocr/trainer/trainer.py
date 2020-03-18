@@ -64,10 +64,10 @@ class Trainer(BaseTrainer):
         # total_metrics = np.zeros(len(self.metrics))
         total_metrics = np.zeros(2)
 
-        end = time.time()
+        # end = time.time()
         for batch_idx, (images, labels, mask, max_label_length) in enumerate(self.data_loader):
-            start = time.time()
-            print("Time load batch:", start - end)
+            # start = time.time()
+            # print("Time load batch:", start - end)
             images, labels, mask = images.to(self.device), labels.to(self.device), mask.to(self.device)
             # print("After change device:", images.get_device(), labels.get_device(), mask.get_device())
 
@@ -94,8 +94,8 @@ class Trainer(BaseTrainer):
             if batch_idx == self.len_epoch:
                 break
 
-            end = time.time()
-            print("Time training batch:", end - start)
+            # end = time.time()
+            # print("Time training batch:", end - start)
 
         log = {
             'loss': total_loss / self.len_epoch,
