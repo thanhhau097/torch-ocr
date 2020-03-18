@@ -3,7 +3,10 @@ import os
 import numpy as np
 
 from ..data_loader.vocab import Vocab
-from ...trdg.generators import GeneratorFromTextFile
+try:
+    from trdg.generators import GeneratorFromTextFile
+except:
+    pass
 from ..data_loader.collate import collate_wrapper
 from ..data_loader.data_loaders import OCRDataLoader
 
