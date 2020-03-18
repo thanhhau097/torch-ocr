@@ -69,7 +69,14 @@ class GeneratorFromTextFile:
         return self
 
     def __next__(self):
-        return self.next()
+        element = None
+        while not element:
+            try:
+                element = self.next()
+            except:
+                element = None
+
+        return element
 
     def next(self):
         if self.generator.generated_count >= len(self.generator.strings):
