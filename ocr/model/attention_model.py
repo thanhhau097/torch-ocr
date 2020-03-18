@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from ocr.base import BaseModel
+from ..base import BaseModel
 from ..data_loader.vocab import SOS_token
 from ..model.decoders.attention_decoder import LuongAttnDecoderRNN
 from ..model.visual_encoders.cnn_encoder import CNNEncoder

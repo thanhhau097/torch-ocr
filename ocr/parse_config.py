@@ -5,8 +5,8 @@ from functools import reduce
 from operator import getitem
 from pathlib import Path
 
-from ocr.logger import setup_logging
-from ocr.utils import read_json, write_json
+from .logger import setup_logging
+from .utils import read_json, write_json
 
 
 class ConfigParser:
