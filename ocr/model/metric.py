@@ -3,7 +3,7 @@ import itertools
 
 import numpy as np
 import torch
-from ocr.data_loader.vocab import Vocab
+from ..data_loader.vocab import Vocab
 
 
 def accuracy_attention(outputs, targets, voc: Vocab):

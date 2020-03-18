@@ -5,7 +5,7 @@ import torch
 from ocr.data_loader.vocab import Vocab
 from ocr.model.ctc_model import CTCModel
 
-from ocr.data_loader.collate import process_image
+from ocr.data_loader.collate import collate_wrapper
 
 
 class LionelOCR():
@@ -26,10 +26,13 @@ class LionelOCR():
     def process(self, image):
         self.model.eval()
         # preprocess image, TODO: height = 64 (no need but to be more accurate)
-        image = process_image(image)
-        images = np.array([image])
-        images = images.transpose((0, 3, 1, 2))
-        images = torch.from_numpy(images).float()
+        batch = [{'image': image, 'label': [1]}]
+        images = collate_wrapper(batch)[0]
+
+        # image = process_image(image)
+        # images = np.array([image])
+        # images = images.transpose((0, 3, 1, 2))
+        # images = torch.from_numpy(images).float()
         images = images.to(self.device)
 
         outputs = self.model(images)
@@ -43,6 +46,22 @@ class LionelOCR():
         return pred_text, 1
 
 
+def use_rules(text):
+    char_dict = {
+        '0': '0',
+        'O': '0',
+        'つ': 'っ'
+    }
+    ignored_characters = [',', '。', '.', '、']
+    for char in ignored_characters:
+        text = text.replace(char, '')
+
+    for k, v in char_dict.items():
+        text = text.replace(k, v)
+
+    return ''.join(text.split(' '))
+
+
 if __name__ == '__main__':
     import cv2
     import json
@@ -51,16 +70,21 @@ if __name__ == '__main__':
     path = 'saved/model_best_real_data_2.pth'
     model = LionelOCR(path, 'data/vocab.json')
 
-    with open('data/daiichi4/daiichi4.json', 'r', encoding='utf-8') as f:
+    with open('data/daiichi4/val.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    for name, label in data.items():
+    total_true = 0
+    for i, (name, label) in enumerate(data.items()):
         path = os.path.join('data/daiichi4/', name)  # 'data/sample/56/5/264_ENGROSSING_25813.jpg'
         image = cv2.imread(path)
         # padding
         padding = 0
         new_image = np.zeros([image.shape[0] + padding * 2, image.shape[1] + padding * 2, image.shape[2]])
         new_image[padding:image.shape[0] + padding, padding:image.shape[1] + padding, :] = image
-
-        print(label)
-        print(model.process(new_image)[0])
+        predicted = use_rules(label)
+        ground_truth = use_rules(model.process(new_image)[0])
+        total_true += int(predicted == ground_truth)
+        # print(use_rules(label))
+        # print(use_rules(model.process(new_image)[0]))
+        if i % 100 == 0:
+            print(total_true, '/', i+1, '=', total_true/(i + 1))

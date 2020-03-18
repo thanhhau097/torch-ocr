@@ -17,7 +17,7 @@ def main(config):
 
     # setup data_loader instances
     json_path = 'daiichi4.json'
-    data_loader = getattr(module_data, "OCRDataLoader")(  # config['data_loader']['type']
+    data_loader = getattr(module_data, config['data_loader']['type'])(
         config['data_loader']['args']['data_dir'],
         json_path,
         training=False,
