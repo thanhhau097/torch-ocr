@@ -8,7 +8,7 @@ import ocr.data_loader.data_loaders as module_data
 import ocr.model.loss as module_loss
 import ocr.model.metric as module_metric
 import ocr.model.ocr_model as module_arch
-from parse_config import ConfigParser
+from ocr.parse_config import ConfigParser
 
 
 def main(config):
