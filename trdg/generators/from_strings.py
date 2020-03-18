@@ -63,6 +63,7 @@ class GeneratorFromStrings:
             raise StopIteration
         self.generated_count += 1
         # print(self.fonts[(self.generated_count - 1) % len(self.fonts)])
+        # print("NEXT STRING", self.strings[(self.generated_count - 1) % len(self.strings)])
         return FakeTextDataGenerator.generate(
             self.generated_count,
             self.strings[(self.generated_count - 1) % len(self.strings)],

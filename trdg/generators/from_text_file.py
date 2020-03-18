@@ -66,7 +66,7 @@ class GeneratorFromTextFile:
         )
 
     def __iter__(self):
-        return self.generator
+        return self
 
     def __next__(self):
         return self.next()

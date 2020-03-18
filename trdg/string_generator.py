@@ -23,13 +23,13 @@ def create_strings_from_file(filename, minimum_length=1, maximum_length=5):
             start = 0
             while start < len(line):
                 length = rnd.randint(minimum_length, maximum_length)
-                strings.append(' '.join(line[start: start + length]))
+                text = ' '.join(line[start: start + length])
+                if text:
+                    strings.append(text)
                 start += length
 
         if len(lines) == 0:
             raise Exception("No lines could be read in file")
-
-        strings.extend(lines)
 
     return strings
 
