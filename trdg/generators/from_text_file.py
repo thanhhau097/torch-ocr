@@ -1,16 +1,20 @@
+import os
+
 from .from_strings import GeneratorFromStrings
 from ..data_generator import FakeTextDataGenerator
-from ..string_generator import create_strings_from_wikipedia
+from ..string_generator import create_strings_from_file
 from ..utils import load_dict, load_fonts
 
 
-class GeneratorFromWikipedia:
+class GeneratorFromTextFile:
     """Generator that uses sentences taken from random Wikipedia articles"""
 
     def __init__(
         self,
+        folder='',
         count=-1,
         minimum_length=1,
+        maximum_length=5,
         fonts=[],
         language="en",
         size=32,
@@ -32,9 +36,14 @@ class GeneratorFromWikipedia:
     ):
         self.count = count
         self.minimum_length = minimum_length
+        self.maximum_length = maximum_length
         self.language = language
+        self.files = [os.path.join(folder, f) for f in os.listdir(folder)]
+        self.index = 0
         self.generator = GeneratorFromStrings(
-            create_strings_from_wikipedia(self.minimum_length, 100, self.language),
+            create_strings_from_file(self.files[self.index],
+                                    minimum_length=self.minimum_length,
+                                    maximum_length=self.maximum_length),
             count,
             fonts if len(fonts) else load_fonts(language),
             language,
@@ -63,9 +72,8 @@ class GeneratorFromWikipedia:
         return self.next()
 
     def next(self):
-        if self.generator.generated_count >= 999:
-            self.generator.strings = create_strings_from_wikipedia(
-                self.minimum_length, 1000, self.language
-            )
+        if self.generator.generated_count >= len(self.generator.strings):
+            self.index = (self.index + 1) % len(self.files)
+            self.generator.strings = create_strings_from_file(self.files[self.index], maximum_length=self.maximum_length)
             self.generator.generated_count = 0
         return self.generator.next()

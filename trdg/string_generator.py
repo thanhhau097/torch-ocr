@@ -6,22 +6,30 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def create_strings_from_file(filename, count):
+def create_strings_from_file(filename, minimum_length=1, maximum_length=5):
     """
         Create all strings by reading lines in specified files
-    """
 
+        minimum_length: min words
+        maximum_length: max words
+    """
     strings = []
 
-    with open(filename, "r", encoding="utf8") as f:
-        lines = [l[0:200] for l in f.read().splitlines() if len(l) > 0]
+    with open(filename, "r", encoding="utf-16") as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line[:-1]
+            line = line.split(' ')
+            start = 0
+            while start < len(line):
+                length = rnd.randint(minimum_length, maximum_length)
+                strings.append(' '.join(line[start: start + length]))
+                start += length
+
         if len(lines) == 0:
             raise Exception("No lines could be read in file")
-        while len(strings) < count:
-            if len(lines) >= count - len(strings):
-                strings.extend(lines[0 : count - len(strings)])
-            else:
-                strings.extend(lines)
+
+        strings.extend(lines)
 
     return strings
 
