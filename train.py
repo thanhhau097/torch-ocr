@@ -19,10 +19,10 @@ def main(config):
     data_loader = config.initialize('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
 
-    print(valid_data_loader)
-    print(len(valid_data_loader))
-    for i, e in enumerate(valid_data_loader):
-        print(i)
+    # print(valid_data_loader)
+    # print(len(valid_data_loader))
+    # for i, e in enumerate(valid_data_loader):
+    #     print(i)
     # get vocab -> pass num chars to model
     voc = data_loader.get_vocab()
     kwarg = {"num_chars": voc.num_chars}
