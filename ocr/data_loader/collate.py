@@ -74,11 +74,11 @@ def process_image(image, height=64, channels=3):
     # resize max_height = 64
     """
     shape = image.shape
-    if shape[0] > 64 or shape[0] < 32:  # height
-        try:
-            image = cv2.resize(image, (int(height/shape[0] * shape[1]), height))
-        except:
-            return np.zeros([1, 1, channels])
+    # if shape[0] > 64 or shape[0] < 32:  # height
+    try:
+        image = cv2.resize(image, (int(height/shape[0] * shape[1]), height))
+    except:
+        return np.zeros([1, 1, channels])
     return image / 255.0
 
 
