@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
     import cv2
-    generator = GeneratorFromTextFile(folder='./data/text', count=100, size=40, language='vi',
+    generator = GeneratorFromTextFile(folder='./data/text', count=100, size=(30, 70), language='vi',
                                       minimum_length=1, maximum_length=10,
                                       skewing_angle=2, random_skew=True, blur=1, random_blur=True,
                                       background_type=3, distorsion_type=-1, margins=(2, 2, 2, 2))

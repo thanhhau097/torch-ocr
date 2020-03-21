@@ -52,6 +52,9 @@ class FakeTextDataGenerator(object):
     ):
         image = None
 
+        if type(size) == tuple or type(size) == list:
+            size = rnd.randint(size[0], size[1])
+
         margin_top, margin_left, margin_bottom, margin_right = margins
         horizontal_margin = margin_left + margin_right
         vertical_margin = margin_top + margin_bottom
