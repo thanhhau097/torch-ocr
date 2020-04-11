@@ -2,13 +2,13 @@ import itertools
 
 import numpy as np
 import torch
-from ocr.data_loader.vocab import Vocab
-from ocr.model.ctc_model import CTCModel
+from .data_loader.vocab import Vocab
+from .model.ctc_model import CTCModel
 
-from ocr.data_loader.collate import collate_wrapper
+from .data_loader.collate import collate_wrapper
 
 
-class LionelOCR():
+class OCRModule:
     def __init__(self, weights_path, vocab_path):
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         # self.device = torch.device('cpu')
@@ -22,6 +22,7 @@ class LionelOCR():
         checkpoint = torch.load(weights_path, map_location=torch.device('cpu'))
         state_dict = checkpoint['state_dict']
         self.model.load_state_dict(state_dict)
+        print("LOAD WEIGHTS SUCCESSFULLY")
 
     def process(self, image):
         self.model.eval()
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     import os
 
     path = 'saved/model_best_real_data_2.pth'
-    model = LionelOCR(path, 'data/vocab.json')
+    model = OCRModule(path, 'data/vocab.json')
 
     with open('data/daiichi4/val.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
